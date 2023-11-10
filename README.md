@@ -10,18 +10,16 @@ The `Tactacam Cloud Pizza`stack deploys an HTTP API Gateway along with Step Func
 
 ## AWS Account Setup
 * Using AWS CLI, proceed to configure AWS CLI with an user account.
-* **If your user account have full administrator access to the AWS account**, Skip to [Useful Commands](#commands)
-* The configured account/profile should have the following `AWS managed` policy permissions
+* **`If your user account have full administrator access to the AWS account`**, Skip to [Useful Commands](#useful-commands)
+* Add the following `AWS managed` permissions to your user
 ![AWS services permissions](img/services-permissions.png)
-* Also the following custom policy permissions
-![cdk-bootstrap](lib/permissions/cdk-bootstrap.json)
-and
-![cdk-deploy](lib/permissions/cdk-deploy.json)
+* Also add the following custom policy permissions
+![cdk-bootstrap permissions](lib/permissions/cdk-bootstrap.json) and ![cdk-deploy permissions](lib/permissions/cdk-deploy.json)
 
 This can be done on the AWS console following the [doc](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_change-permissions.html).
 
 
-## Useful commands {#commands}
+## Useful commands
 
  * `npm run build`   compile typescript to js
  * `npm run bootstrap`   provision resources for the AWS CDK before you can deploy AWS CDK apps
@@ -31,7 +29,7 @@ This can be done on the AWS console following the [doc](https://docs.aws.amazon.
  * `cdk diff`        compare deployed stack with current state
  * `cdk synth`       emits the synthesized CloudFormation template
 
-## Steps to deploy {#deploy}
+## Steps to deploy
  1. `npm run bootstrap`
  2. `npm run build`
  3. `npm run deploy`
