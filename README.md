@@ -4,6 +4,10 @@ This is a simple CDK stack to deploy the `Tactacam Cloud Pizza` service using AW
 
 The `Tactacam Cloud Pizza`stack deploys an HTTP API Gateway along with Step Functions that orchestrate the start to preparate and deliver process once an pizza order is requested.
 
+The Cloud Pizza State machine flow diagram
+
+![Architecture](img/stepfunctions_graph.png)
+
 ## Requirements
 * `AWS CLI` v2 or latest version [install guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 * Node.js 18.x or latest LTS version [download](https://nodejs.org/en/download)
@@ -26,6 +30,7 @@ This can be done on the AWS console following the [doc](https://docs.aws.amazon.
  * `npm run watch`   watch for changes and compile
  * `npm run test`    perform the jest unit tests
  * `npm run deploy`  deploy this stack to your default AWS account/region
+ * `npm run destroy` Deletes the CloudPizzaStack and all the resources
  * `cdk diff`        compare deployed stack with current state
  * `cdk synth`       emits the synthesized CloudFormation template
 
@@ -35,16 +40,11 @@ This can be done on the AWS console following the [doc](https://docs.aws.amazon.
  3. `npm run deploy`
 
 
-The Cloud Pizza State machine flow diagram
-
-![Architecture](img/stepfunctions_graph.png)
-
-
 ### Testing It Out
 
-After deployment you should see an API Gateway HTTP API `CloudPizzaStack.HTTPAPIUrl` like on the following screenshot:
+After running the `npm run deploy` command you should see an the API URL `CloudPizzaStack.HTTPAPIUrl`, similar like the following screenshot:
 
-![Architecture](img/deploy-successful.png)
+![Architecture](img/deploy-output.png)
 
 For a successful execution run on the terminal replacing the `{HTTPAPIUrl}` with your `CloudPizzaStack.HTTPAPIUrl` url first.
 ```bash
@@ -67,7 +67,7 @@ curl --header "Content-Type: application/json" --request POST --data '{"flavour"
 The responses returned are the raw and full output from the step function so will look something like this:
 
 ```json
-// A successful execution, note the status of SUCCEEDED
+// A successful execution, note the "status" of SUCCEEDED and the "output" json string object field
 {
     "billingDetails": {
         "billedDurationInMilliseconds": 2100,
@@ -92,7 +92,7 @@ The responses returned are the raw and full output from the step function so wil
     "traceHeader": "Root=1-654d8448-df5ccbf6db237b18e8062cbd;Sampled=1"
 }
 
-// a failed execution, notice status: FAILED and the cause/error properties
+// a failed execution, note the status: FAILED and the cause/error properties
 {
     "billingDetails": {
         "billedDurationInMilliseconds": 200,
@@ -118,3 +118,8 @@ The responses returned are the raw and full output from the step function so wil
     "traceHeader": "Root=1-654d849f-9a078245a9a46cedd4455b48;Sampled=1"
 }
 ```
+
+## Cleanup
+
+1. Make sure you delete the `CloudPizzaStack` by running `npm run destroy`
+2. And also go to the [Cloudformation console](https://us-east-1.console.aws.amazon.com/cloudformation/home) and manually delete `CDKToolkit` stack
