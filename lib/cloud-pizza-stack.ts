@@ -40,8 +40,8 @@ export class CloudPizzaStack extends Stack {
     // Lambda Task to analyze pizza flavour
     const orderPizza = new tasks.LambdaInvoke(this, "Order Pizza Job", {
       lambdaFunction: pineappleCheckLambda,
-      inputPath: '$.flavour',
-      resultPath: '$.pineappleAnalysis',
+      inputPath: '$',
+      resultPath: '$.orderAnalysis',
       payloadResponseOnly: true
     });
 
@@ -55,15 +55,22 @@ export class CloudPizzaStack extends Stack {
       error: 'Failed To Make Pizza',
     });
 
+    // Pizza Order failure step defined
+    const addressRequired = new sfn.Fail(this, 'Sorry, We Need an Address for delivery', {
+      cause: 'Address not deliverable or not specified',
+      error: 'Failed To Make Pizza',
+    });
+
     // Cook pizza state simulation 1 seconds, this could be another LambdaInvoke state
     const cookPizza = new sfn.Wait(this, 'Lets make your pizza', {
       time: sfn.WaitTime.duration(Duration.seconds(1))
     });
 
     // Choice state condition to check for pinneapple flavour and then cook
-    const checkPizza = new sfn.Choice(this, 'With Pineapple?') // Logical choice added to flow
+    const checkOrder = new sfn.Choice(this, 'Valid order?') // Logical choice added to flow
       // Look at the "containsPineapple" field   
-      .when(sfn.Condition.booleanEquals('$.pineappleAnalysis.containsPineapple', true), pineappleDetected) // Fail for pineapple
+      .when(sfn.Condition.booleanEquals('$.orderAnalysis.containsPineapple', true), pineappleDetected) // Fail for pineapple
+      .when(sfn.Condition.booleanEquals('$.orderAnalysis.addressDeliverable', false), addressRequired) // Fail for invalid address
       // Cook pizza
       .otherwise(cookPizza);
 
@@ -102,10 +109,10 @@ export class CloudPizzaStack extends Stack {
 
     //Express Step function definition
     const definition = sfn.Chain
-      .start(orderPizza)      // Step 1: Order starts
-      .next(checkPizza.afterwards())       // Step 2: Check flavour analysis and cook
-      .next(deliverPizza)     // Step 3: Deliver pizza
-      .next(deliverSucceeded) // Step 4: Deliver succeeded
+      .start(orderPizza)              // Step 1: Order starts
+      .next(checkOrder.afterwards())  // Step 2: Check flavour analysis and cook
+      .next(deliverPizza)             // Step 3: Deliver pizza
+      .next(deliverSucceeded)         // Step 4: Deliver succeeded
 
     // State machine
     const stateMachine = new sfn.StateMachine(this, 'PizzaStateMachine', {

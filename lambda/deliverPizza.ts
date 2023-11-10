@@ -18,18 +18,18 @@ function getEstimateDeliveryTime(address: string) {
 }
 
 /**
- * Simulates waiting 3 seconds to start the delivery process
+ * Simulates waiting 1 second to start the delivery process
  * @returns 
  */
 function simulateDeliverStartTime() {
-    return new Promise((resolve) => setTimeout(resolve, 3000));
+    return new Promise((resolve) => setTimeout(resolve, 1000));
 }
 
 /**
  * 
  * For testing purposes it fails it the address is equal to "Not a real street"
  */
-exports.handler = async function ({ flavour, address, testFailDeliver }: DeliverPizzaRequest) {
+export async function handler({ flavour, address, testFailDeliver }: DeliverPizzaRequest) {
     // This would be likely an async call to a service to get an estimation delivery time
     const estimateDuration = getEstimateDeliveryTime(address);
 
